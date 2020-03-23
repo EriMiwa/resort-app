@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import items from './data';
+// import items from './data';
 import Client from './Contentful';
 
 const RoomContext = React.createContext();
@@ -22,31 +22,33 @@ class RoomProvider extends Component {
   };
 
   getData = async() => {
-    try{
+    try {
       let response = await Client.getEntries({
-        content_type: "beachResort"
-      })
-      let rooms = this.formatData(items);
+        content_type: "beachResort",
+        order: "sys.createdAt"
+      });
+
+      let rooms = this.formatData(response.items);
       let featuredRooms = rooms.filter(room => room.featured === true);
       let maxPrice = Math.max(...rooms.map(item => item.price));
       let maxSize = Math.max(...rooms.map(item => item.size));
-
       this.setState({
-        rooms,
-        featuredRooms,
-        sortedRooms: rooms,
-        loading: false,
-        price: maxPrice,
-        maxPrice,
-        maxSize
-      })
+      rooms,
+      featuredRooms,
+      sortedRooms: rooms,
+      loading: false,
+      price: maxPrice,
+      maxPrice,
+      maxSize
+    });
 
-    } catch (error) {
+    } catch (error){
       console.log(error)
     }
   }
 
   componentDidMount() {
+    this.getData()
     // let rooms = this.formatData(items);
     // let featuredRooms = rooms.filter(room => room.featured === true);
     // let maxPrice = Math.max(...rooms.map(item => item.price));
@@ -67,12 +69,11 @@ class RoomProvider extends Component {
     let tempItems = items.map(item => {
       let id = item.sys.id;
       let images = item.fields.images.map(image => image.fields.file.url);
-
-      let room = {...item.fields, images, id};
+      let room = { ...item.fields, images, id };
       return room;
     });
     return tempItems;
-  };
+  }
 
   getRoom = (slug) => {
     let tempRooms = [...this.state.rooms];
@@ -83,7 +84,7 @@ class RoomProvider extends Component {
   handleChange = (e) => {
     const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value
-    const name = e.target.name;
+    const name = target.name;
 
     this.setState({
       [name]:value
