@@ -14,3 +14,4 @@ Around 1 weeks.
 
 
 ## ✋What I want to progress for the next project.
+Contentful is one of the good solutions for managing data. I would love to use it for other project as well.
